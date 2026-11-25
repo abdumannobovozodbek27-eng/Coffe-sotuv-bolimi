@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kofe va shirinliklar</title>
+<style>
+:root{--bg:#f4ece2;--card:#fffaf4;--ink:#2b1b12;--mute:#7a6455;--line:#e6d5c1;--acc:#8a4b24;--acc2:#6b3a1b;--on:#fff;--gold:#d9a066;--hero:#2b1b12;--warn:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#1a110c;--card:#251913;--ink:#f3e7d8;--mute:#b09a87;--line:#3b2a20;--acc:#d29353;--acc2:#e3ab70;--on:#1a110c;--hero:#120b07;--warn:#ff8a80}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif}
+.hero{background:linear-gradient(135deg,var(--hero),#4a2c1b);color:#f3e7d8;padding:56px 20px 48px}
+.wrap{max-width:1080px;margin:auto}
+.hero h1{font-size:clamp(2.4rem,7vw,4.4rem);line-height:1.05;margin:0;font-weight:700;letter-spacing:-.02em;max-width:14ch}
+.hero p{margin:14px 0 0;color:#d9c4ad;max-width:48ch;font-size:1.05rem}
+.facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:28px;font-size:.92rem;color:#e8d3bb}
+.facts span{padding-left:12px;border-left:2px solid var(--gold)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 20px;max-width:1080px;margin:auto}
+.tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 18px;border-radius:99px;font:inherit;font-weight:600;cursor:pointer}
+.tab.on{background:var(--acc);color:var(--on);border-color:var(--acc)}
+main{max-width:1080px;margin:auto;padding:24px 20px 80px;display:grid;grid-template-columns:1fr 360px;gap:28px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.pic{aspect-ratio:4/3;background:#e3cdb2;overflow:hidden}
+.pic svg,.pic img{width:100%;height:100%;display:block;object-fit:cover}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.info h3{margin:0;font-size:1.15rem}
+.info small{color:var(--mute)}
+.row{display:flex;justify-content:space-between;align-items:center;padding-top:14px;margin-top:auto}
+.price{font-weight:800}
+.btn{border:0;background:var(--acc);color:var(--on);border-radius:10px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--acc2)}.btn:disabled{opacity:.5}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:1.15rem;cursor:pointer}
+.qty.big button{width:30px;height:30px}
+aside{align-self:start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;scroll-margin-top:70px}
+@media(min-width:861px){aside{position:sticky;top:76px}}
+aside h2{margin:0 0 12px;font-size:1.4rem}
+.line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0}
+.total{border-top:1px solid var(--line);margin-top:8px;padding-top:12px;font-weight:800;font-size:1.2rem}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.zone{margin-bottom:10px}.zone span{font-size:.8rem;color:var(--mute);display:block;margin-bottom:5px}
+.seats{display:flex;flex-wrap:wrap;gap:6px}
+.seat{min-width:58px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;text-align:center}
+.seat small{display:block;font-weight:400;font-size:.7rem;color:var(--mute)}
+.seat.on{background:var(--acc);color:var(--on);border-color:var(--acc)}.seat.on small{color:var(--on);opacity:.8}
+#msg{margin-top:12px;font-size:.92rem;min-height:1.3em}
+.err{color:var(--warn)}.ok{color:var(--acc);font-weight:700}
+.empty{color:var(--mute);font-size:.92rem;margin:4px 0}
+#setup{max-width:1080px;margin:16px auto 0;padding:16px;border:1px dashed var(--acc);border-radius:14px;background:var(--card)}
+#setup p{margin:0 0 8px;font-size:.92rem}#setup .r{display:flex;gap:8px}
+#cb{position:fixed;left:12px;right:12px;bottom:12px;z-index:6;display:none;justify-content:space-between;align-items:center;background:var(--acc);color:var(--on);border:0;border-radius:14px;padding:14px 18px;font:inherit;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer}
+@media(max-width:860px){#cb.show{display:flex}}
+#done{position:fixed;inset:0;z-index:20;background:rgba(20,10,5,.6);display:none;align-items:center;justify-content:center;padding:20px}
+#done.show{display:flex}
+#done div{background:var(--card);border-radius:20px;padding:30px;max-width:380px;text-align:center}
+#done h2{margin:0 0 8px;font-size:1.6rem}#done p{color:var(--mute);margin:0 0 18px}
+</style>
+</head>
+<body>
+<section class="hero"><div class="wrap">
+  <h1 class="serif">Kofe va shirinliklar</h1>
+  <p>Menyudan tanlang, o‘tiradigan joyingizni belgilang. Buyurtmangiz darhol baristaga yetib boradi.</p>
+  <div class="facts"><span>Har kuni 08:00 dan 23:00 gacha</span><span>Joyida yoki olib ketish</span><span>Har kuni yangi qovurilgan kofe</span></div>
+</div></section>
+
+<div id="setup" hidden>
+  <p><b>Sozlash (faqat egasi uchun):</b> Apps Script havolasini (<code>/exec</code> bilan tugaydi) bir marta qo‘ying.</p>
+  <div class="r"><input id="url" placeholder="https://script.google.com/macros/s/.../exec"><button class="btn" id="saveUrl">Saqlash</button></div>
+</div>
+
+<div class="bar"><div class="tabs" id="tabs"></div></div>
+
+<main>
+  <section><div class="menu" id="menu"></div></section>
+  <aside id="order">
+    <h2 class="serif">Buyurtmangiz</h2>
+    <div id="cart"></div>
+    <div class="line total"><span>Jami</span><span id="sum">0 so‘m</span></div>
+    <label for="name">Ismingiz</label>
+    <input id="name" autocomplete="name" placeholder="Masalan, Aziz">
+    <label for="phone">Telefon raqamingiz</label>
+    <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+998 90 123 45 67">
+    <label>Qayerda o‘tirasiz?</label>
+    <div id="zones"></div>
+    <label for="note">Izoh (ixtiyoriy)</label>
+    <input id="note" placeholder="Masalan, shakarsiz">
+    <button class="btn" id="send" style="width:100%;margin-top:16px;padding:14px">Buyurtma berish</button>
+    <div id="msg" role="status"></div>
+  </aside>
+</main>
+
+<button id="cb"><span id="cbn">0 ta</span><span>Buyurtmani ko‘rish: <b id="cbs"></b></span></button>
+<div id="done"><div><h2 class="serif">Buyurtma qabul qilindi</h2><p id="donep"></p><button class="btn" id="close">Yopish</button></div></div>
+
+<script>
+var SCRIPT_URL = "";
+
+// img: o'zingizning rasmingiz yo'li yoki havolasi (masalan "rasm/latte.jpg"). Bo'sh bo'lsa, chizilgan rasm chiqadi.
+var MENU = [
+  {c:"Kofe",n:"Espresso",d:"Kuchli, 30 ml",p:15000,a:"espresso",img:""},
+  {c:"Kofe",n:"Amerikano",d:"Yumshoq, 250 ml",p:18000,a:"americano",img:""},
+  {c:"Kofe",n:"Kapuchino",d:"Sutli ko‘pik bilan",p:24000,a:"cappuccino",img:""},
+  {c:"Kofe",n:"Latte",d:"Mayin, 300 ml",p:26000,a:"latte",img:""},
+  {c:"Kofe",n:"Flat white",d:"Ikki espresso, sut",p:28000,a:"flat",img:""},
+  {c:"Kofe",n:"Muzli kofe",d:"Sovuq, 350 ml",p:27000,a:"iced",img:""},
+  {c:"Choy",n:"Qora choy",d:"Choynakda",p:12000,a:"black",img:""},
+  {c:"Choy",n:"Ko‘k choy",d:"Yasmin bilan",p:12000,a:"green",img:""},
+  {c:"Choy",n:"Matcha latte",d:"Sutli matcha",p:30000,a:"matcha",img:""},
+  {c:"Shirinlik",n:"Cheesecake",d:"Klassik Nyu-York",p:32000,a:"cheese",img:""},
+  {c:"Shirinlik",n:"Tiramisu",d:"Mascarpone bilan",p:34000,a:"tiramisu",img:""},
+  {c:"Shirinlik",n:"Kruassan",d:"Sariyog‘li",p:16000,a:"croissant",img:""},
+  {c:"Shirinlik",n:"Brauni",d:"Shokoladli",p:20000,a:"brownie",img:""}
+];
+var ZONES = [
+  {z:"Deraza yonida",s:[["D1",2],["D2",2],["D3",2],["D4",4]]},
+  {z:"Asosiy zal",s:[["Z1",4],["Z2",4],["Z3",4],["Z4",6],["Z5",6]]},
+  {z:"Terrasa",s:[["T1",2],["T2",4],["T3",4]]},
+  {z:"Boshqa",s:[["Olib ketaman",0]]}
+];
+
+/* Chizilgan rasmlar */
+function wrap(s){return '<svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ecdac5"/><stop offset="1" stop-color="#d1b08c"/></linearGradient></defs><rect width="200" height="150" fill="url(#bgg)"/><ellipse cx="100" cy="124" rx="64" ry="8" fill="#000" opacity=".12"/>'+s+'</svg>'}
+function cup(liq,foam,tag,sc){
+  var g='<ellipse cx="100" cy="118" rx="56" ry="7" fill="#f3e8da"/><path d="M138 70h8a12 12 0 0 1 0 24h-10" stroke="#fbf6ef" stroke-width="6" fill="none"/><path d="M62 62h76v24q0 30-38 30t-38-30z" fill="#fbf6ef"/><ellipse cx="100" cy="62" rx="38" ry="7" fill="'+liq+'"/>';
+  if(foam) g+='<ellipse cx="100" cy="62" rx="30" ry="5" fill="'+foam+'"/>';
+  g+= tag ? '<path d="M112 62L132 36" stroke="#fff" stroke-width="1.5"/><rect x="128" y="26" width="11" height="13" rx="2" fill="#b9783f"/>'
+          : '<path d="M88 50q-6-9 0-17M102 48q-6-9 0-17M116 50q-6-9 0-17" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>';
+  return wrap('<g transform="translate(100 118) scale('+(sc||1)+') translate(-100 -118)">'+g+'</g>');
+}
+var ART = {
+  espresso:function(){return cup("#3b2216","#b97a3a",0,.72)},
+  americano:function(){return cup("#4a2a16","",0)},
+  cappuccino:function(){return cup("#8b5a32","#f3e4cf",0)},
+  latte:function(){return cup("#b98558","#f3e4cf",0)},
+  flat:function(){return cup("#a8703f","#f6ead6",0)},
+  black:function(){return cup("#9a4b1f","",1)},
+  green:function(){return cup("#c6c46a","",1)},
+  matcha:function(){return cup("#8aa05a","#b7c98a",0)},
+  iced:function(){return wrap('<polygon points="66,38 134,38 124,118 76,118" fill="#fff" opacity=".35"/><polygon points="67,48 133,48 129,78 71,78" fill="#ead3b3"/><polygon points="71,78 129,78 124,118 76,118" fill="#5a3220"/><rect x="80" y="54" width="16" height="16" rx="3" fill="#fff" opacity=".6" transform="rotate(-12 88 62)"/><rect x="104" y="60" width="16" height="16" rx="3" fill="#fff" opacity=".55" transform="rotate(14 112 68)"/><rect x="108" y="14" width="7" height="82" rx="3" fill="#c98b4b" transform="rotate(10 111 55)"/>')},
+  cheese:function(){return wrap('<ellipse cx="100" cy="118" rx="60" ry="8" fill="#f3e8da"/><rect x="56" y="100" width="88" height="14" rx="3" fill="#b98a57"/><rect x="56" y="66" width="88" height="36" fill="#f8e9c8"/><rect x="52" y="54" width="96" height="14" rx="7" fill="#b8352b"/><circle cx="76" cy="52" r="6" fill="#d0463a"/><circle cx="98" cy="49" r="6" fill="#d0463a"/><circle cx="120" cy="52" r="6" fill="#d0463a"/>')},
+  tiramisu:function(){return wrap('<ellipse cx="100" cy="118" rx="60" ry="8" fill="#f3e8da"/><rect x="54" y="98" width="92" height="16" rx="3" fill="#6b4226"/><rect x="54" y="84" width="92" height="14" fill="#f6ead2"/><rect x="54" y="70" width="92" height="14" fill="#b9783f"/><rect x="54" y="58" width="92" height="12" fill="#f6ead2"/><rect x="54" y="48" width="92" height="10" rx="5" fill="#3b2216"/><circle cx="72" cy="46" r="2" fill="#3b2216"/><circle cx="100" cy="44" r="2" fill="#3b2216"/><circle cx="128" cy="46" r="2" fill="#3b2216"/>')},
+  croissant:function(){return wrap('<ellipse cx="60" cy="102" rx="9" ry="15" fill="#c47c2c" transform="rotate(-55 60 102)"/><ellipse cx="140" cy="102" rx="9" ry="15" fill="#c47c2c" transform="rotate(55 140 102)"/><ellipse cx="76" cy="88" rx="15" ry="26" fill="#d28d3a" transform="rotate(-30 76 88)"/><ellipse cx="124" cy="88" rx="15" ry="26" fill="#d28d3a" transform="rotate(30 124 88)"/><ellipse cx="100" cy="80" rx="23" ry="32" fill="#e0a04c"/><path d="M86 62q14 8 28 0M84 78q16 8 32 0M88 94q12 6 24 0" stroke="#b9702a" stroke-width="2.5" fill="none" stroke-linecap="round"/>')},
+  brownie:function(){return wrap('<rect x="58" y="62" width="84" height="54" rx="7" fill="#4a2a1a"/><rect x="58" y="62" width="84" height="14" rx="7" fill="#64391f"/><path d="M66 70q10 8 20 0t20 0t20 0t12 0" stroke="#f2dfc4" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="58" rx="9" ry="6" fill="#b98a57"/><ellipse cx="108" cy="56" rx="9" ry="6" fill="#a87a49"/>')}
+};
+
+var cart = {}, cat = "Kofe", seat = "", busy = false;
+var $ = function(id){return document.getElementById(id)};
+function fmt(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so‘m"}
+function lsGet(k){try{return localStorage.getItem(k)||""}catch(e){return ""}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function getUrl(){return SCRIPT_URL||lsGet("script_url")}
+var cats = [];
+MENU.forEach(function(m){if(cats.indexOf(m.c)<0)cats.push(m.c)});
+
+function drawTabs(){
+  $("tabs").innerHTML = "";
+  cats.forEach(function(c){
+    var b = document.createElement("button");
+    b.className = "tab"+(c===cat?" on":""); b.textContent = c;
+    b.onclick = function(){cat=c; drawTabs(); drawMenu();};
+    $("tabs").appendChild(b);
+  });
+}
+function pic(m){
+  var d = document.createElement("div"); d.className = "pic";
+  d.innerHTML = ART[m.a]();
+  if(m.img){
+    var im = new Image(); im.alt = m.n; im.loading = "lazy";
+    im.onload = function(){d.innerHTML = ""; d.appendChild(im)};
+    im.src = m.img;
+  }
+  return d;
+}
+function stepper(i,cls){
+  var s = document.createElement("span"); s.className = "qty "+(cls||"");
+  s.innerHTML = "<button aria-label='Kamaytirish'>−</button><b>"+cart[i]+"</b><button aria-label='Ko‘paytirish'>+</button>";
+  var bs = s.querySelectorAll("button");
+  bs[0].onclick = function(){change(i,-1)}; bs[1].onclick = function(){change(i,1)};
+  return s;
+}
+function drawMenu(){
+  $("menu").innerHTML = "";
+  MENU.forEach(function(m,i){
+    if(m.c!==cat) return;
+    var d = document.createElement("div"); d.className = "item";
+    d.appendChild(pic(m));
+    var f = document.createElement("div"); f.className = "info";
+    f.innerHTML = "<h3 class='serif'>"+m.n+"</h3><small>"+m.d+"</small><div class='row'><span class='price'>"+fmt(m.p)+"</span></div>";
+    var row = f.querySelector(".row");
+    if(cart[i]) row.appendChild(stepper(i));
+    else{
+      var b = document.createElement("button"); b.className = "btn"; b.textContent = "Qo‘shish";
+      b.onclick = function(){change(i,1)}; row.appendChild(b);
+    }
+    d.appendChild(f); $("menu").appendChild(d);
+  });
+}
+function change(i,d){
+  cart[i] = Math.max(0,(cart[i]||0)+d);
+  if(!cart[i]) delete cart[i];
+  drawCart(); drawMenu();
+}
+function drawCart(){
+  var ids = Object.keys(cart), sum = 0, n = 0;
+  $("cart").innerHTML = ids.length ? "" : "<p class='empty'>Hali hech narsa tanlanmagan.</p>";
+  ids.forEach(function(i){
+    var m = MENU[i], q = cart[i]; sum += m.p*q; n += q;
+    var l = document.createElement("div"); l.className = "line";
+    l.innerHTML = "<span>"+m.n+"</span>";
+    l.appendChild(stepper(i,"big")); $("cart").appendChild(l);
+  });
+  $("sum").textContent = fmt(sum);
+  $("cbn").textContent = n+" ta"; $("cbs").textContent = fmt(sum);
+  $("cb").className = n ? "show" : "";
+}
+function drawZones(){
+  $("zones").innerHTML = "";
+  ZONES.forEach(function(z){
+    var w = document.createElement("div"); w.className = "zone";
+    w.innerHTML = "<span>"+z.z+"</span><div class='seats'></div>";
+    z.s.forEach(function(s){
+      var b = document.createElement("button");
+      b.className = "seat"+(seat===s[0]?" on":"");
+      b.innerHTML = s[0]+(s[1]?"<small>"+s[1]+" kishilik</small>":"");
+      b.onclick = function(){seat=s[0]; drawZones();};
+      w.querySelector(".seats").appendChild(b);
+    });
+    $("zones").appendChild(w);
+  });
+}
+function say(t,cls){$("msg").className = cls||""; $("msg").textContent = t;}
+
+$("cb").onclick = function(){$("order").scrollIntoView()};
+$("close").onclick = function(){$("done").className = ""};
+$("saveUrl").onclick = function(){
+  var u = $("url").value.trim();
+  if(u.indexOf("https://script.google.com/")!==0 || u.slice(-5)!=="/exec")
+    return say("Havola https://script.google.com/ bilan boshlanib, /exec bilan tugashi kerak.","err");
+  lsSet("script_url",u); SCRIPT_URL = u; $("setup").hidden = true; say("Havola saqlandi.","ok");
+};
+
+$("send").onclick = function(){
+  if(busy) return;
+  var name = $("name").value.trim(), phone = $("phone").value.trim(), note = $("note").value.trim();
+  var ids = Object.keys(cart);
+  if(!ids.length) return say("Avval menyudan biror narsa tanlang.","err");
+  if(name.length<2) return say("Ismingizni kiriting.","err");
+  if(phone.replace(/\D/g,"").length<9) return say("Telefon raqamni to‘liq kiriting.","err");
+  if(!seat) return say("O‘tiradigan joyni belgilang.","err");
+  var url = getUrl();
+  if(!url){$("setup").hidden = false; window.scrollTo(0,0); return say("Avval sahifa tepasidagi oynaga Apps Script havolasini qo‘ying.","err");}
+  var total = 0, items = ids.map(function(i){total += MENU[i].p*cart[i]; return MENU[i].n+" x"+cart[i]}).join(", ");
+  busy = true; $("send").disabled = true; say("Yuborilmoqda…");
+  fetch(url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({name:name,phone:phone,seat:seat,items:items,total:total,note:note})})
+  .then(function(){
+    lsSet("u_name",name); lsSet("u_phone",phone);
+    $("donep").textContent = "Rahmat, "+name+"! Joyingiz: "+seat+". Buyurtmangiz tayyorlanmoqda.";
+    $("done").className = "show"; say("");
+    cart = {}; seat = ""; $("note").value = ""; drawCart(); drawMenu(); drawZones();
+  })
+  .catch(function(){say("Yuborib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.","err")})
+  .then(function(){busy = false; $("send").disabled = false;});
+};
+
+$("name").value = lsGet("u_name"); $("phone").value = lsGet("u_phone");
+if(!getUrl()) $("setup").hidden = false;
+drawTabs(); drawMenu(); drawCart(); drawZones();
+</script>
+</body>
+</html>
